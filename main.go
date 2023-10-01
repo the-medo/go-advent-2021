@@ -45,6 +45,7 @@ func main() {
 	inputData := utils.ReadFile(filePath)
 
 	fmt.Printf("======= Running Day %d =========", *day)
+	fmt.Println()
 
 	switch *day {
 	case 1:
