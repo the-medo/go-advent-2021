@@ -1,2 +1,3 @@
-Run days with
-`go run main.go -day=1 -test=true`
+Test input run: `go run main.go -day=1`
+
+Real input run: `go run main.go -day=1 -real=true`

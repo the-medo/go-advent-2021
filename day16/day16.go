@@ -1,4 +1,4 @@
-package day2
+package day16
 
 func Solve(input string) {
 
