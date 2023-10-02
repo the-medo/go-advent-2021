@@ -37,6 +37,7 @@ import (
 func main() {
 	day := flag.Int("day", 1, "Which day's solution to run")
 	useRealInput := flag.Bool("real", false, "Use real input")
+	useAiSolution := flag.Bool("ai", false, "Use ai-modified solution")
 	flag.Parse()
 
 	fileName := fmt.Sprintf("input_%s_%d.txt", getInputType(*useRealInput), *day)
@@ -53,7 +54,12 @@ func main() {
 	case 2:
 		day2.Solve(inputData)
 	case 3:
-		day3.Solve(inputData)
+		if *useAiSolution {
+			day3.SolveAi(inputData)
+			break
+		} else {
+			day3.Solve(inputData)
+		}
 	case 4:
 		day4.Solve(inputData)
 	case 5:

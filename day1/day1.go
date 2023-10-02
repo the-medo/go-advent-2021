@@ -6,10 +6,7 @@ import (
 
 func Solve(input string) {
 	rows := utils.SplitRows(input)
-	numbers, err := utils.StringsToInts(rows)
-	if err != nil {
-		panic(err)
-	}
+	numbers := utils.StringsToInts(rows)
 
 	// ============== Part 1
 	increases := 0

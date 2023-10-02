@@ -1,17 +1,20 @@
 package utils
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
-func StringsToInts(strs []string) ([]int, error) {
+func StringsToInts(strs []string) []int {
 	ints := make([]int, len(strs))
 
 	for i, s := range strs {
-		val, err := strconv.Atoi(s)
+		val, err := strconv.Atoi(strings.TrimSpace(s))
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 		ints[i] = val
 	}
 
-	return ints, nil
+	return ints
 }
