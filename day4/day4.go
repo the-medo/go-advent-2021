@@ -52,7 +52,7 @@ func Solve(input string) {
 }
 
 func prepareBoards(boardString string) ([][]int, [][]bool, int) {
-	board, boardSum := utils.SplitToMatrix(boardString)
+	board, boardSum := utils.SplitToMatrix(boardString, true, true)
 
 	emptyBoard := make([][]bool, len(board))
 	for i := range emptyBoard {
