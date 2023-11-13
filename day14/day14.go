@@ -6,80 +6,129 @@ import (
 	"strings"
 )
 
-type Counter map[rune]int
-type InsertionRules map[rune]map[rune]rune
+type RunePair struct {
+	r1 rune
+	r2 rune
+}
+
+type Counter map[RunePair]int
+type InsertionRules map[RunePair][]RunePair
+type RuneCounter map[rune]int
+
+type StepState struct {
+	step    int
+	counter Counter
+}
+
+func (stepState *StepState) processStep(rules InsertionRules) *StepState {
+	newCounter := make(Counter)
+
+	for runePair, count := range stepState.counter {
+		for _, insertedPair := range rules[runePair] {
+			newCounter[insertedPair] += count
+		}
+	}
+
+	return &StepState{
+		step:    stepState.step + 1,
+		counter: newCounter,
+	}
+}
+
+func (stepState *StepState) countRunes(template []rune) (runeCounter RuneCounter, minRune rune, maxRune rune, minRuneCount int, maxRuneCount int) {
+
+	runeCounter = make(RuneCounter)
+
+	for runePair, count := range stepState.counter {
+		runeCounter[runePair.r1] += count
+		runeCounter[runePair.r2] += count
+	}
+
+	//because we have
+	for r, _ := range runeCounter {
+		runeCounter[r] = runeCounter[r] / 2
+	}
+
+	firstRune := template[0]
+	lastRune := template[len(template)-1]
+
+	runeCounter[lastRune]++
+	if firstRune != lastRune {
+		runeCounter[firstRune]++
+	}
+
+	minRune = firstRune
+	maxRune = firstRune
+	minRuneCount = runeCounter[firstRune]
+	maxRuneCount = runeCounter[firstRune]
+
+	for r, count := range runeCounter {
+		if count < minRuneCount {
+			minRune = r
+			minRuneCount = count
+		} else if count > maxRuneCount {
+			maxRune = r
+			maxRuneCount = count
+		}
+	}
+
+	return
+}
 
 func Solve(input string) {
 	sections := utils.SplitByEmptyRow(input)
-	mapOfInsertions := make(map[rune]map[rune]rune)
+	insertionRules := make(InsertionRules)
 
-	template, insertionRuleStrings, stepCount := []rune(sections[0]), utils.SplitRows(sections[1]), 20
+	template, insertionRuleStrings, stepCount := []rune(sections[0]), utils.SplitRows(sections[1]), 40
 
 	for _, insertionRule := range insertionRuleStrings {
 		split := strings.Split(insertionRule, " -> ")
 
 		rune1 := rune(split[0][0])
 		rune2 := rune(split[0][1])
+		inserted := rune(split[1][0])
 
-		if mapOfInsertions[rune1] == nil {
-			mapOfInsertions[rune1] = make(map[rune]rune)
+		mainRunePair := RunePair{r1: rune1, r2: rune2}
+		inserted1 := RunePair{r1: rune1, r2: inserted}
+		inserted2 := RunePair{r1: inserted, r2: rune2}
+
+		if insertionRules[mainRunePair] == nil {
+			insertionRules[mainRunePair] = []RunePair{inserted1, inserted2}
 		}
+	}
 
-		mapOfInsertions[rune1][rune2] = rune(split[1][0])
+	baseCounter := make(Counter)
+
+	var lastRune rune
+	for _, thisRune := range template {
+		if lastRune != 0 {
+			baseCounter[RunePair{r1: lastRune, r2: thisRune}]++
+		}
+		lastRune = thisRune
 	}
 
 	fmt.Println("Template: ", template)
-	fmt.Println("Map of insertions", mapOfInsertions)
+	fmt.Println("Map of insertions", insertionRules)
 
-	for i := 1; i <= stepCount; i++ {
-		fmt.Print("Step ", i, ": ")
-		template = processStep(template, mapOfInsertions)
-		countRunes(template)
+	baseStepState := &StepState{
+		step:    0,
+		counter: baseCounter,
 	}
 
-	_, min, max := countRunes(template)
-	fmt.Println("Part 1: ", max, " - ", min, " = ", max-min)
+	states := make([]StepState, stepCount+1)
 
-}
+	states[1] = *baseStepState.processStep(insertionRules)
+	for step := 2; step <= stepCount; step++ {
+		states[step] = *states[step-1].processStep(insertionRules)
 
-func processStep(runes []rune, insertionRules InsertionRules) []rune {
-	newArray := make([]rune, len(runes)*2-1)
+		_, _, _, minCount, maxCount := states[step].countRunes(template)
 
-	for i, r := range runes {
-		newArray[(i * 2)] = r
-		if i >= len(runes)-1 {
-			continue
+		if step == 10 {
+			fmt.Println("Part 1: ", maxCount, " - ", minCount, " = ", maxCount-minCount)
+		} else if step == 40 {
+			fmt.Println("Part 2: ", maxCount, " - ", minCount, " = ", maxCount-minCount)
+		} else {
+			fmt.Println("Step ", step, ": ", maxCount, " - ", minCount, " = ", maxCount-minCount)
 		}
-		newArray[(i*2)+1] = insertionRules[r][runes[i+1]]
 	}
-
-	return newArray
-}
-
-func countRunes(runes []rune) (Counter, int, int) {
-	counter := make(Counter, 26)
-	for _, r := range runes {
-		counter[r]++
-	}
-
-	min, max := 0, 0
-	i := 0
-	for _, count := range counter {
-		if i == 0 {
-			min, max = count, count
-		}
-		if min > count && count > 0 {
-			min = count
-		} else if max < count {
-			max = count
-		}
-		i++
-	}
-
-	for key, r := range counter {
-		fmt.Print(string(key), "=", r, " ; ")
-	}
-	fmt.Println()
-
-	return counter, min, max
 }
