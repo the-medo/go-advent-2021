@@ -18,6 +18,32 @@ type QueueTask struct {
 func Solve(input string) {
 	matrix, _ := utils.SplitToMatrix(input, false, false)
 	ProcessPart(&matrix, 1)
+
+	gridMultiplier := 5
+	baseRowCount := len(matrix)
+	baseColCount := len(matrix[0])
+	part2RowCount := baseRowCount * gridMultiplier
+	part2ColCount := baseColCount * gridMultiplier
+
+	newMatrix := make([][]int, part2RowCount)
+	for i, _ := range newMatrix {
+		matrixRow := make([]int, part2ColCount)
+		rowIncrement := i / baseRowCount
+		baseRow := i % baseRowCount
+		for j, _ := range matrixRow {
+			colIncrement := j / baseColCount
+			baseCol := j % baseColCount
+			baseValue := matrix[baseRow][baseCol]
+			newValue := baseValue + rowIncrement + colIncrement
+			for newValue > 9 {
+				newValue = newValue - 9
+			}
+			matrixRow[j] = newValue
+		}
+		newMatrix[i] = matrixRow
+	}
+
+	ProcessPart(&newMatrix, 2)
 }
 
 func ProcessPart(matrix *[][]int, part int) {
