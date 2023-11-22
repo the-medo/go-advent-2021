@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/the-medo/go-advent-2021/day16"
 
 	"github.com/the-medo/go-advent-2021/utils"
 	"path"
@@ -14,7 +15,6 @@ import (
 	"github.com/the-medo/go-advent-2021/day13"
 	"github.com/the-medo/go-advent-2021/day14"
 	"github.com/the-medo/go-advent-2021/day15"
-	"github.com/the-medo/go-advent-2021/day16"
 	"github.com/the-medo/go-advent-2021/day17"
 	"github.com/the-medo/go-advent-2021/day18"
 	"github.com/the-medo/go-advent-2021/day19"
@@ -85,6 +85,8 @@ func main() {
 	case 15:
 		day15.Solve(inputData)
 	case 16:
+		//day16.Solve("38006F45291200")
+		//day16.Solve("EE00D40C823060")
 		day16.Solve(inputData)
 	case 17:
 		day17.Solve(inputData)
