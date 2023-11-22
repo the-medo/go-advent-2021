@@ -85,8 +85,6 @@ func main() {
 	case 15:
 		day15.Solve(inputData)
 	case 16:
-		//day16.Solve("38006F45291200")
-		//day16.Solve("EE00D40C823060")
 		day16.Solve(inputData)
 	case 17:
 		day17.Solve(inputData)

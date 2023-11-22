@@ -10,5 +10,5 @@ func BinaryToInt64(binaryNumber string) int64 {
 		panic(err)
 	}
 
-	return int64(number)
+	return number
 }

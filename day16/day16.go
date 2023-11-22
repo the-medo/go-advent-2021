@@ -26,6 +26,7 @@ func Solve(input string) {
 	part1 := runPart1(*transmission)
 
 	fmt.Println("Part 1 = ", part1)
+	fmt.Println("Part 2 = ", transmission.LiteralValue)
 }
 
 func runPart1(packet Packet) int {
@@ -116,6 +117,57 @@ func processBinaryPacket(binaryPacket string) *Packet {
 			}
 			rsp.PacketString = binaryPacket[0:totalLengthOfThisPacket]
 		}
+
+		result := int64(0)
+		if packetTypeId == 0 {
+			//sum packet
+			for _, x := range rsp.Subpackets {
+				result += x.LiteralValue
+			}
+
+		} else if packetTypeId == 1 {
+			//product packet (multiply)
+			result = 1
+			for _, x := range rsp.Subpackets {
+				result *= x.LiteralValue
+			}
+
+		} else if packetTypeId == 2 {
+			//minimum packet
+			result = rsp.Subpackets[0].LiteralValue
+			for _, x := range rsp.Subpackets {
+				if x.LiteralValue < result {
+					result = x.LiteralValue
+				}
+			}
+		} else if packetTypeId == 3 {
+			//maximum packet
+			result = rsp.Subpackets[0].LiteralValue
+			for _, x := range rsp.Subpackets {
+				if x.LiteralValue > result {
+					result = x.LiteralValue
+				}
+			}
+		} else if packetTypeId == 5 {
+			//greater than packet - their value is 1 if the value of the first sub-packet is greater than the value of the second sub-packet; otherwise, their value is 0
+			if rsp.Subpackets[0].LiteralValue > rsp.Subpackets[1].LiteralValue {
+				result = 1
+			}
+
+		} else if packetTypeId == 6 {
+			//less than packets - their value is 1 if the value of the first sub-packet is less than the value of the second sub-packet; otherwise, their value is 0
+			if rsp.Subpackets[0].LiteralValue < rsp.Subpackets[1].LiteralValue {
+				result = 1
+			}
+
+		} else if packetTypeId == 7 {
+			//equal packet
+			if rsp.Subpackets[0].LiteralValue == rsp.Subpackets[1].LiteralValue {
+				result = 1
+			}
+		}
+
+		rsp.LiteralValue = result
 	}
 
 	fmt.Println("===============================")
